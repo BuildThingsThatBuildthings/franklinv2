@@ -207,50 +207,51 @@ export default function SubscriptionScreen() {
             </View>
           </View>
         ) : (
-
-        {isConfigured && !hasActiveSubscription() && (
-          <TouchableOpacity
-            style={styles.syncButton}
-            onPress={handleSyncSubscription}
-            disabled={checkoutLoading}
-          >
-            <Text style={styles.syncButtonText}>
-              {checkoutLoading ? 'Syncing...' : 'Sync Subscription from Stripe'}
-            </Text>
-          </TouchableOpacity>
-        )}
-          <View style={styles.subscriptionPlans}>
-            <Text style={styles.plansTitle}>Choose Your Plan</Text>
-            
-            {stripeProducts.map((product) => (
-              <View key={product.id} style={styles.planCard}>
-                <View style={styles.planHeader}>
-                  <Text style={styles.planName}>{product.name}</Text>
-                  <View style={styles.priceContainer}>
-                    <Text style={styles.price}>${product.price}</Text>
-                    <Text style={styles.interval}>/{product.interval}</Text>
-                  </View>
-                </View>
-                
-                <Text style={styles.planDescription}>{product.description}</Text>
-                
-                <TouchableOpacity
-                  style={[styles.subscribeButton, checkoutLoading && styles.buttonDisabled]}
-                  onPress={() => handleSubscribe(product.priceId)}
-                  disabled={checkoutLoading || !isConfigured}
-                >
-                  {checkoutLoading ? (
-                    <ActivityIndicator size="small" color="#FFFFFF" />
-                  ) : (
-                    <>
-                      <CreditCard size={20} color="#FFFFFF" />
-                      <Text style={styles.subscribeButtonText}>Subscribe Now</Text>
-                    </>
-                  )}
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
+           <>
+             {isConfigured && !hasActiveSubscription() && (
+               <TouchableOpacity
+                 style={styles.syncButton}
+                 onPress={handleSyncSubscription}
+                 disabled={checkoutLoading}
+               >
+                 <Text style={styles.syncButtonText}>
+                   {checkoutLoading ? 'Syncing...' : 'Sync Subscription from Stripe'}
+                 </Text>
+               </TouchableOpacity>
+             )}
+             <View style={styles.subscriptionPlans}>
+               <Text style={styles.plansTitle}>Choose Your Plan</Text>
+               
+               {stripeProducts.map((product) => (
+                 <View key={product.id} style={styles.planCard}>
+                   <View style={styles.planHeader}>
+                     <Text style={styles.planName}>{product.name}</Text>
+                     <View style={styles.priceContainer}>
+                       <Text style={styles.price}>${product.price}</Text>
+                       <Text style={styles.interval}>/{product.interval}</Text>
+                     </View>
+                   </View>
+                   
+                   <Text style={styles.planDescription}>{product.description}</Text>
+                   
+                   <TouchableOpacity
+                     style={[styles.subscribeButton, checkoutLoading && styles.buttonDisabled]}
+                     onPress={() => handleSubscribe(product.priceId)}
+                     disabled={checkoutLoading || !isConfigured}
+                   >
+                     {checkoutLoading ? (
+                       <ActivityIndicator size="small" color="#FFFFFF" />
+                     ) : (
+                       <>
+                         <CreditCard size={20} color="#FFFFFF" />
+                         <Text style={styles.subscribeButtonText}>Subscribe Now</Text>
+                       </>
+                     )}
+                   </TouchableOpacity>
+                 </View>
+               ))}
+             </View>
+           </>
         )}
       </ScrollView>
     </SafeAreaView>
