@@ -1,12 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { DailyStats } from '@/src/types/core';
-import { 
-  CheckCircle, 
-  Clock, 
-  Target, 
-  TrendingUp 
-} from 'lucide-react-native';
+import { CircleCheck as CheckCircle, Clock, Target, TrendingUp } from 'lucide-react-native';
 
 interface DailyStatsCardProps {
   stats: DailyStats;

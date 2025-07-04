@@ -1,14 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { MicroAction } from '@/src/types/core';
-import { 
-  CheckCircle, 
-  Circle, 
-  Clock, 
-  Flame, 
-  Target,
-  Zap
-} from 'lucide-react-native';
+import { CircleCheck as CheckCircle, Circle, Clock, Flame, Target, Zap } from 'lucide-react-native';
 
 interface ActionCardProps {
   action: MicroAction;
