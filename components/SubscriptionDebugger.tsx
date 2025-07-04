@@ -72,12 +72,12 @@ export function SubscriptionDebugger() {
     if (!isConfigured || !user) return;
 
     Alert.alert(
-      'Fix Subscription Status',
-      'This will attempt to manually set your subscription status to active. Continue?',
+      'Sync Subscription from Stripe',
+      'This will fetch the latest subscription data from Stripe and update the local database. Continue?',
       [
         { text: 'Cancel', style: 'cancel' },
         {
-          text: 'Fix',
+          text: 'Sync',
           onPress: async () => {
             try {
               // Get customer ID
@@ -88,20 +88,30 @@ export function SubscriptionDebugger() {
                 .maybeSingle();
 
               if (customer?.customer_id) {
-                // Update subscription status to active
-                const { error } = await supabase
-                  .from('stripe_subscriptions')
-                  .update({ 
-                    status: 'active',
-                    updated_at: new Date().toISOString()
-                  })
-                  .eq('customer_id', customer.customer_id);
+                // Call our sync function to fetch latest data from Stripe
+                const response = await fetch(`${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/sync-subscription`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+                  },
+                  body: JSON.stringify({
+                    customer_id: customer.customer_id,
+                  }),
+                });
 
-                if (error) {
-                  Alert.alert('Error', `Failed to update: ${error.message}`);
-                } else {
-                  Alert.alert('Success', 'Subscription status updated to active');
+                if (!response.ok) {
+                  const errorData = await response.json();
+                  throw new Error(errorData.error || 'Failed to sync subscription');
+                }
+
+                const result = await response.json();
+                
+                if (result.success) {
+                  Alert.alert('Success', 'Subscription synced successfully from Stripe');
                   runDiagnostics(); // Refresh debug data
+                } else {
+                  Alert.alert('Error', result.error || 'Failed to sync subscription');
                 }
               } else {
                 Alert.alert('Error', 'No customer record found');
@@ -144,7 +154,7 @@ export function SubscriptionDebugger() {
             style={styles.fixButton}
             onPress={fixSubscriptionStatus}
           >
-            <Text style={styles.buttonText}>Fix Status</Text>
+            <Text style={styles.buttonText}>Sync from Stripe</Text>
           </TouchableOpacity>
         )}
       </View>

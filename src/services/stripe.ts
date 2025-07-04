@@ -40,3 +40,29 @@ export async function createCheckoutSession(params: CreateCheckoutSessionParams)
 
   return await response.json();
 }
+
+export async function syncSubscriptionFromStripe(customerId: string): Promise<{ success: boolean; error?: string }> {
+  const { data: { session } } = await supabase.auth.getSession();
+  
+  if (!session?.access_token) {
+    throw new Error('No authentication token available');
+  }
+
+  const response = await fetch(`${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/sync-subscription`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session.access_token}`,
+    },
+    body: JSON.stringify({
+      customer_id: customerId,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to sync subscription');
+  }
+
+  return await response.json();
+}

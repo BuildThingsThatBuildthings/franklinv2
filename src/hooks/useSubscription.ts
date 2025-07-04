@@ -94,7 +94,7 @@ export function useSubscription() {
 
   const hasActiveSubscription = () => {
     console.log('Checking subscription status:', subscription?.subscription_status);
-    return subscription?.subscription_status === 'active';
+    return subscription?.subscription_status === 'active' || subscription?.subscription_status === 'trialing';
   };
 
   const isSubscriptionCanceled = () => {

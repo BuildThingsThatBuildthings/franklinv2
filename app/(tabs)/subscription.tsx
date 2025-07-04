@@ -55,6 +55,60 @@ export default function SubscriptionScreen() {
     return new Date(timestamp * 1000).toLocaleDateString();
   };
 
+  const handleSyncSubscription = async () => {
+    if (!isConfigured || !user) return;
+
+    try {
+      setCheckoutLoading(true);
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        throw new Error('No authentication token available');
+      }
+
+      // Get customer ID
+      const { data: customer } = await supabase
+        .from('stripe_customers')
+        .select('customer_id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (!customer?.customer_id) {
+        throw new Error('No customer record found');
+      }
+
+      const response = await fetch(`${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/sync-subscription`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          customer_id: customer.customer_id,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to sync subscription');
+      }
+
+      const result = await response.json();
+      
+      if (result.success) {
+        Alert.alert('Success', 'Subscription synced successfully from Stripe');
+        // Refresh subscription data
+        window.location.reload();
+      } else {
+        Alert.alert('Error', result.error || 'Failed to sync subscription');
+      }
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to sync subscription');
+    } finally {
+      setCheckoutLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
@@ -153,6 +207,18 @@ export default function SubscriptionScreen() {
             </View>
           </View>
         ) : (
+
+        {isConfigured && !hasActiveSubscription() && (
+          <TouchableOpacity
+            style={styles.syncButton}
+            onPress={handleSyncSubscription}
+            disabled={checkoutLoading}
+          >
+            <Text style={styles.syncButtonText}>
+              {checkoutLoading ? 'Syncing...' : 'Sync Subscription from Stripe'}
+            </Text>
+          </TouchableOpacity>
+        )}
           <View style={styles.subscriptionPlans}>
             <Text style={styles.plansTitle}>Choose Your Plan</Text>
             
@@ -378,6 +444,19 @@ const styles = StyleSheet.create({
   subscribeButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
+    fontFamily: 'Inter-SemiBold',
+  },
+  syncButton: {
+    backgroundColor: '#059669',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginBottom: 16,
+    alignItems: 'center',
+  },
+  syncButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
     fontFamily: 'Inter-SemiBold',
   },
   debugButton: {
