@@ -10,6 +10,8 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
+  forgotPassword: (email: string) => Promise<{ error: any }>;
+  resetPassword: (password: string) => Promise<{ error: any }>;
   isConfigured: boolean;
 }
 
@@ -140,6 +142,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const forgotPassword = async (email: string) => {
+    if (!isSupabaseConfigured) {
+      // Mock forgot password for demo
+      return { error: null };
+    }
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/(auth)/reset-password`,
+      });
+      return { error };
+    } catch (error) {
+      return { error };
+    }
+  };
+
+  const resetPassword = async (password: string) => {
+    if (!isSupabaseConfigured) {
+      // Mock reset password for demo
+      return { error: null };
+    }
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: password,
+      });
+      return { error };
+    } catch (error) {
+      return { error };
+    }
+  };
   return (
     <AuthContext.Provider
       value={{
@@ -149,6 +182,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signIn,
         signUp,
         signOut,
+        forgotPassword,
+        resetPassword,
         isConfigured: isSupabaseConfigured,
       }}
     >

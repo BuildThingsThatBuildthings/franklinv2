@@ -11,35 +11,71 @@ import {
 } from 'react-native';
 import { Link, router } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react-native';
+import { Mail, ArrowLeft, CircleCheck as CheckCircle } from 'lucide-react-native';
 
-export default function SignInScreen() {
+export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
-  const { signIn } = useAuth();
+  const { forgotPassword, isConfigured } = useAuth();
 
-  const handleSignIn = async () => {
-    if (!email || !password) {
-      setError('Please fill in all fields');
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError('Please enter your email address');
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setError('Please enter a valid email address');
       return;
     }
 
     setLoading(true);
     setError(null);
 
-    const { error } = await signIn(email, password);
+    const { error } = await forgotPassword(email);
     
     if (error) {
       setError(error.message);
       setLoading(false);
     } else {
-      router.replace('/(tabs)');
+      setSuccess(true);
+      setLoading(false);
     }
   };
+
+  if (success) {
+    return (
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.container}
+      >
+        <View style={styles.successContainer}>
+          <CheckCircle size={64} color="#059669" />
+          <Text style={styles.successTitle}>Check Your Email</Text>
+          <Text style={styles.successMessage}>
+            {isConfigured 
+              ? `We've sent a password reset link to ${email}. Please check your inbox and follow the instructions.`
+              : 'Demo mode: In a real app, a password reset email would be sent to your email address.'
+            }
+          </Text>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.replace('/(auth)')}
+          >
+            <Text style={styles.backButtonText}>Back to Sign In</Text>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
+    );
+  }
 
   return (
     <KeyboardAvoidingView
@@ -48,8 +84,15 @@ export default function SignInScreen() {
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
-          <Text style={styles.title}>Welcome to Franklin</Text>
-          <Text style={styles.subtitle}>Transform your identity through daily micro-actions</Text>
+          <Link href="/(auth)" asChild>
+            <TouchableOpacity style={styles.backArrow}>
+              <ArrowLeft size={24} color="#6B7280" />
+            </TouchableOpacity>
+          </Link>
+          <Text style={styles.title}>Reset Password</Text>
+          <Text style={styles.subtitle}>
+            Enter your email address and we'll send you a link to reset your password
+          </Text>
         </View>
 
         <View style={styles.form}>
@@ -59,11 +102,20 @@ export default function SignInScreen() {
             </View>
           )}
 
+          {!isConfigured && (
+            <View style={styles.demoNotice}>
+              <Text style={styles.demoTitle}>Demo Mode</Text>
+              <Text style={styles.demoText}>
+                Password reset emails are not sent in demo mode. Configure Supabase to enable this feature.
+              </Text>
+            </View>
+          )}
+
           <View style={styles.inputContainer}>
             <Mail size={20} color="#6B7280" style={styles.inputIcon} />
             <TextInput
               style={styles.input}
-              placeholder="Email"
+              placeholder="Email address"
               placeholderTextColor="#9CA3AF"
               value={email}
               onChangeText={setEmail}
@@ -73,52 +125,21 @@ export default function SignInScreen() {
             />
           </View>
 
-          <View style={styles.inputContainer}>
-            <Lock size={20} color="#6B7280" style={styles.inputIcon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Password"
-              placeholderTextColor="#9CA3AF"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={!showPassword}
-              autoComplete="password"
-            />
-            <TouchableOpacity
-              onPress={() => setShowPassword(!showPassword)}
-              style={styles.eyeIcon}
-            >
-              {showPassword ? (
-                <EyeOff size={20} color="#6B7280" />
-              ) : (
-                <Eye size={20} color="#6B7280" />
-              )}
-            </TouchableOpacity>
-          </View>
-
           <TouchableOpacity
             style={[styles.button, loading && styles.buttonDisabled]}
-            onPress={handleSignIn}
+            onPress={handleForgotPassword}
             disabled={loading}
           >
             <Text style={styles.buttonText}>
-              {loading ? 'Signing In...' : 'Sign In'}
+              {loading ? 'Sending...' : 'Send Reset Link'}
             </Text>
           </TouchableOpacity>
 
           <View style={styles.linkContainer}>
-            <Text style={styles.linkText}>Don't have an account? </Text>
-            <Link href="/(auth)/sign-up" asChild>
+            <Text style={styles.linkText}>Remember your password? </Text>
+            <Link href="/(auth)" asChild>
               <TouchableOpacity>
-                <Text style={styles.link}>Sign Up</Text>
-              </TouchableOpacity>
-            </Link>
-          </View>
-
-          <View style={styles.forgotPasswordContainer}>
-            <Link href="/(auth)/forgot-password" asChild>
-              <TouchableOpacity>
-                <Text style={styles.forgotPasswordLink}>Forgot Password?</Text>
+                <Text style={styles.link}>Sign In</Text>
               </TouchableOpacity>
             </Link>
           </View>
@@ -139,8 +160,11 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   header: {
-    alignItems: 'center',
     marginBottom: 48,
+  },
+  backArrow: {
+    marginBottom: 24,
+    alignSelf: 'flex-start',
   },
   title: {
     fontSize: 32,
@@ -152,7 +176,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Inter-Regular',
     color: '#6B7280',
-    textAlign: 'center',
     lineHeight: 24,
   },
   form: {
@@ -169,6 +192,25 @@ const styles = StyleSheet.create({
     color: '#991B1B',
     fontSize: 14,
     fontFamily: 'Inter-Regular',
+  },
+  demoNotice: {
+    backgroundColor: '#FEF3C7',
+    borderWidth: 1,
+    borderColor: '#F59E0B',
+    borderRadius: 8,
+    padding: 12,
+  },
+  demoTitle: {
+    fontSize: 14,
+    fontFamily: 'Inter-SemiBold',
+    color: '#92400E',
+    marginBottom: 4,
+  },
+  demoText: {
+    fontSize: 12,
+    fontFamily: 'Inter-Regular',
+    color: '#92400E',
+    lineHeight: 16,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -188,9 +230,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Inter-Regular',
     color: '#111827',
-  },
-  eyeIcon: {
-    padding: 4,
   },
   button: {
     backgroundColor: '#991B1B',
@@ -223,14 +262,37 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-SemiBold',
     color: '#991B1B',
   },
-  forgotPasswordContainer: {
+  successContainer: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 16,
+    padding: 24,
   },
-  forgotPasswordLink: {
-    fontSize: 14,
+  successTitle: {
+    fontSize: 24,
+    fontFamily: 'Inter-Bold',
+    color: '#1E3A8A',
+    marginTop: 24,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  successMessage: {
+    fontSize: 16,
     fontFamily: 'Inter-Regular',
     color: '#6B7280',
-    textDecorationLine: 'underline',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 32,
+  },
+  backButton: {
+    backgroundColor: '#991B1B',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+  },
+  backButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontFamily: 'Inter-SemiBold',
   },
 });
