@@ -21,6 +21,7 @@ export function useSubscription() {
   const [subscription, setSubscription] = useState<UserSubscription | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [debugInfo, setDebugInfo] = useState<any>(null);
 
   useEffect(() => {
     if (!user || !isConfigured) {
@@ -36,22 +37,51 @@ export function useSubscription() {
       setLoading(true);
       setError(null);
 
+      // First, let's check what's in the stripe_customers table
+      const { data: customerData, error: customerError } = await supabase
+        .from('stripe_customers')
+        .select('*')
+        .eq('user_id', user?.id)
+        .is('deleted_at', null);
+
+      // Check the stripe_subscriptions table directly
+      const { data: subscriptionData, error: subscriptionError } = await supabase
+        .from('stripe_subscriptions')
+        .select('*')
+        .is('deleted_at', null);
+
+      // Now check the view
       const { data, error: fetchError } = await supabase
         .from('stripe_user_subscriptions')
         .select('*')
         .maybeSingle();
 
+      // Set debug info for troubleshooting
+      setDebugInfo({
+        userId: user?.id,
+        customerData,
+        customerError,
+        subscriptionData,
+        subscriptionError,
+        viewData: data,
+        viewError: fetchError,
+        timestamp: new Date().toISOString(),
+      });
+
       if (fetchError) {
+        console.error('Error fetching subscription from view:', fetchError);
         throw fetchError;
       }
 
       if (data) {
+        console.log('Subscription data found:', data);
         const product = data.price_id ? getProductByPriceId(data.price_id) : null;
         setSubscription({
           ...data,
           product_name: product?.name,
         });
       } else {
+        console.log('No subscription data found in view');
         setSubscription(null);
       }
     } catch (err: any) {
@@ -63,6 +93,7 @@ export function useSubscription() {
   };
 
   const hasActiveSubscription = () => {
+    console.log('Checking subscription status:', subscription?.subscription_status);
     return subscription?.subscription_status === 'active';
   };
 
@@ -74,6 +105,7 @@ export function useSubscription() {
     subscription,
     loading,
     error,
+    debugInfo,
     hasActiveSubscription,
     isSubscriptionCanceled,
     refetch: fetchSubscription,
