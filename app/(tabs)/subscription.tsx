@@ -207,13 +207,17 @@ export default function SubscriptionScreen() {
           <View style={styles.activeSubscription}>
             <View style={styles.subscriptionHeader}>
               <Crown size={32} color="#059669" />
-              <Text style={styles.activeTitle}>Active Subscription</Text>
+              <Text style={styles.activeTitle}>
+                {subscription?.subscription_status === 'not_started' ? 'Beta Access' : 'Active Subscription'}
+              </Text>
             </View>
             
             <View style={styles.subscriptionDetails}>
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Plan:</Text>
-                <Text style={styles.detailValue}>{subscription?.product_name || 'Franklin'}</Text>
+                <Text style={styles.detailValue}>
+                  {subscription?.subscription_status === 'not_started' ? 'Beta Tester' : subscription?.product_name || 'Franklin'}
+                </Text>
               </View>
               
               <View style={styles.detailRow}>
@@ -221,23 +225,33 @@ export default function SubscriptionScreen() {
                 <View style={[styles.statusBadge, getStatusBadgeStyle(subscription?.subscription_status)]}>
                   <Check size={16} color="#059669" />
                   <Text style={[styles.statusText, getStatusTextStyle(subscription?.subscription_status)]}>
-                    {getStatusDisplayText(subscription?.subscription_status)}
+                    {subscription?.subscription_status === 'not_started' ? 'Beta Access' : getStatusDisplayText(subscription?.subscription_status)}
                   </Text>
                 </View>
               </View>
               
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Next billing:</Text>
-                <Text style={styles.detailValue}>
-                  {formatDate(subscription?.current_period_end)}
-                </Text>
-              </View>
+              {subscription?.subscription_status !== 'not_started' && (
+                <View style={styles.detailRow}>
+                  <Text style={styles.detailLabel}>Next billing:</Text>
+                  <Text style={styles.detailValue}>
+                    {formatDate(subscription?.current_period_end)}
+                  </Text>
+                </View>
+              )}
               
               {subscription?.payment_method_brand && (
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Payment method:</Text>
                   <Text style={styles.detailValue}>
                     {subscription.payment_method_brand.toUpperCase()} •••• {subscription.payment_method_last4}
+                  </Text>
+                </View>
+              )}
+              
+              {subscription?.subscription_status === 'not_started' && (
+                <View style={styles.betaNotice}>
+                  <Text style={styles.betaText}>
+                    🎉 You have beta access to all Franklin features! Thank you for being an early supporter.
                   </Text>
                 </View>
               )}
@@ -424,6 +438,18 @@ const styles = StyleSheet.create({
     color: '#92400E',
     marginLeft: 8,
     flex: 1,
+  },
+  betaNotice: {
+    backgroundColor: '#DBEAFE',
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 8,
+  },
+  betaText: {
+    fontSize: 12,
+    fontFamily: 'Inter-Regular',
+    color: '#1E40AF',
+    textAlign: 'center',
   },
   subscriptionPlans: {
     gap: 16,

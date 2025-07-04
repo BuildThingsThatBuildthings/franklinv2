@@ -94,9 +94,20 @@ export function useSubscription() {
 
   const hasActiveSubscription = () => {
     console.log('Checking subscription status:', subscription?.subscription_status);
-    // Support all subscription statuses that should have access to features
-    const validStatuses = ['active', 'trialing', 'past_due', 'incomplete'];
-    return subscription?.subscription_status && validStatuses.includes(subscription.subscription_status);
+    
+    // If we have a customer record, they should have access (for beta/test users)
+    if (subscription?.customer_id) {
+      // Support all subscription statuses that should have access to features
+      const validStatuses = ['active', 'trialing', 'past_due', 'incomplete'];
+      
+      // Also grant access if they have a customer_id (beta/test users)
+      // or if they have an active/valid subscription
+      return subscription.subscription_status && 
+             (validStatuses.includes(subscription.subscription_status) || 
+              subscription.customer_id !== null);
+    }
+    
+    return false;
   };
 
   const isSubscriptionCanceled = () => {

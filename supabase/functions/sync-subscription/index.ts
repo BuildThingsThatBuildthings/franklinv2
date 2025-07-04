@@ -83,7 +83,8 @@ Deno.serve(async (req) => {
     console.log(`Found ${subscriptions.data.length} subscriptions for customer ${customer_id}`);
 
     if (subscriptions.data.length === 0) {
-      // No subscriptions found, update status to not_started
+      // No subscriptions found - this might be a beta/test user
+      // Keep them as having access but mark as not_started
       const { error: updateError } = await supabase.from('stripe_subscriptions').upsert(
         {
           customer_id: customer_id,
@@ -109,7 +110,7 @@ Deno.serve(async (req) => {
 
       return corsResponse({ 
         success: true, 
-        message: 'No active subscriptions found',
+        message: 'No active subscriptions found - beta/test user access maintained',
         status: 'not_started'
       });
     }

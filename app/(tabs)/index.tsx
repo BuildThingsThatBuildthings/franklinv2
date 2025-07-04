@@ -39,9 +39,13 @@ export default function TodayScreen() {
               <View style={styles.activeSubscriptionBanner}>
                 <Crown size={24} color="#059669" />
                 <View style={styles.subscriptionInfo}>
-                  <Text style={styles.subscriptionTitle}>Franklin Premium</Text>
+                  <Text style={styles.subscriptionTitle}>
+                    {subscription?.subscription_status === 'not_started' ? 'Franklin Beta' : 'Franklin Premium'}
+                  </Text>
                   <Text style={styles.subscriptionSubtitle}>
-                    {subscription?.product_name || 'Active subscription'}
+                    {subscription?.subscription_status === 'not_started' 
+                      ? 'Beta tester access - thank you!' 
+                      : subscription?.product_name || 'Active subscription'}
                   </Text>
                 </View>
               </View>

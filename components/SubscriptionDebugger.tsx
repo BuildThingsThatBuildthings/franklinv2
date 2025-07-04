@@ -58,6 +58,28 @@ export function SubscriptionDebugger() {
           .maybeSingle();
 
         diagnostics.testSubscription = { data: testSub, error: testSubError };
+        
+        // 5. Check what's actually in Stripe for this customer
+        try {
+          const response = await fetch(`${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/debug-stripe-customer`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+            },
+            body: JSON.stringify({
+              customer_id: testCustomer.customer_id,
+            }),
+          });
+          
+          if (response.ok) {
+            diagnostics.stripeData = await response.json();
+          } else {
+            diagnostics.stripeData = { error: 'Failed to fetch Stripe data' };
+          }
+        } catch (error) {
+          diagnostics.stripeData = { error: `Stripe fetch error: ${error}` };
+        }
       }
 
       setDebugData(diagnostics);
