@@ -12,23 +12,7 @@ import {
 } from 'react-native';
 import { useReflections } from '@/src/hooks/useReflections';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  Calendar, 
-  Sun, 
-  Moon, 
-  Star, 
-  Lightbulb, 
-  Heart, 
-  Target,
-  TrendingUp,
-  Smile,
-  Battery,
-  BookOpen,
-  Plus,
-  Edit3,
-  Save,
-  X
-} from 'lucide-react-native';
+import { Calendar, Sun, Moon, Star, Lightbulb, Heart, Target, TrendingUp, Smile, Battery, BookOpen, Plus, CreditCard as Edit3, Save, X } from 'lucide-react-native';
 
 type ReflectionType = 'morning' | 'evening' | 'weekly';
 
