@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Alert } from 'r
 import { router } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 import { User, LogOut, Shield, Bell } from 'lucide-react-native';
+import { SubscriptionDebugger } from '@/components/SubscriptionDebugger';
 
 export default function SettingsScreen() {
   const { user, signOut } = useAuth();
@@ -60,6 +61,8 @@ export default function SettingsScreen() {
             <Text style={styles.settingArrow}>→</Text>
           </TouchableOpacity>
         </View>
+
+        <SubscriptionDebugger />
 
         <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
           <LogOut size={20} color="#991B1B" />

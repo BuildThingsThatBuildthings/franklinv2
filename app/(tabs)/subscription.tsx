@@ -18,8 +18,9 @@ import * as WebBrowser from 'expo-web-browser';
 
 export default function SubscriptionScreen() {
   const { user, isConfigured } = useAuth();
-  const { subscription, loading, hasActiveSubscription, isSubscriptionCanceled } = useSubscription();
+  const { subscription, loading, hasActiveSubscription, isSubscriptionCanceled, debugInfo } = useSubscription();
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [showDebugInfo, setShowDebugInfo] = useState(false);
 
   const handleSubscribe = async (priceId: string) => {
     if (!isConfigured) {
@@ -79,6 +80,28 @@ export default function SubscriptionScreen() {
             <Text style={styles.demoText}>
               Subscription features are not available in demo mode. Configure Supabase to enable payments.
             </Text>
+          </View>
+        )}
+
+        {isConfigured && (
+          <TouchableOpacity
+            style={styles.debugButton}
+            onPress={() => setShowDebugInfo(!showDebugInfo)}
+          >
+            <Text style={styles.debugButtonText}>
+              {showDebugInfo ? 'Hide Debug Info' : 'Show Debug Info'}
+            </Text>
+          </TouchableOpacity>
+        )}
+
+        {showDebugInfo && debugInfo && (
+          <View style={styles.debugContainer}>
+            <Text style={styles.debugTitle}>Debug Information:</Text>
+            <ScrollView style={styles.debugContent}>
+              <Text style={styles.debugText}>
+                {JSON.stringify(debugInfo, null, 2)}
+              </Text>
+            </ScrollView>
           </View>
         )}
 
@@ -356,5 +379,40 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontFamily: 'Inter-SemiBold',
+  },
+  debugButton: {
+    backgroundColor: '#374151',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    marginBottom: 16,
+    alignSelf: 'flex-start',
+  },
+  debugButtonText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontFamily: 'Inter-Regular',
+  },
+  debugContainer: {
+    backgroundColor: '#F3F4F6',
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 24,
+    maxHeight: 300,
+  },
+  debugTitle: {
+    fontSize: 14,
+    fontFamily: 'Inter-SemiBold',
+    color: '#374151',
+    marginBottom: 8,
+  },
+  debugContent: {
+    flex: 1,
+  },
+  debugText: {
+    fontSize: 10,
+    fontFamily: 'Inter-Regular',
+    color: '#374151',
+    lineHeight: 14,
   },
 });

@@ -7,11 +7,20 @@ import { CircleCheck as CheckCircle, Crown, ArrowRight } from 'lucide-react-nati
 
 export default function TodayScreen() {
   const { user, isConfigured } = useAuth();
-  const { hasActiveSubscription, subscription, loading } = useSubscription();
+  const { hasActiveSubscription, subscription, loading, debugInfo } = useSubscription();
 
   const handleUpgradePress = () => {
     router.push('/(tabs)/subscription');
   };
+
+  // Add logging to help debug
+  console.log('Today Screen - Subscription info:', {
+    hasActiveSubscription: hasActiveSubscription(),
+    subscription,
+    loading,
+    isConfigured,
+    user: user?.id,
+  });
 
   return (
     <SafeAreaView style={styles.container}>
