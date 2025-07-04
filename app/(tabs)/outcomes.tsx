@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Ref
 import { useOutcomes } from '@/src/hooks/useOutcomes';
 import { OutcomeCard } from '@/components/OutcomeCard';
 import { CreateOutcomeModal } from '@/components/CreateOutcomeModal';
-import { Target, Plus, TrendingUp, Calendar, CheckCircle } from 'lucide-react-native';
+import { Target, Plus, TrendingUp, Calendar, CircleCheck as CheckCircle } from 'lucide-react-native';
 
 export default function OutcomesScreen() {
   const { 
