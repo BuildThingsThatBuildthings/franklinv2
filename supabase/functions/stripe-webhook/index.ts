@@ -130,12 +130,11 @@ async function syncCustomerFromStripe(customerId: string) {
     // fetch latest subscription data from Stripe
     const subscriptions = await stripe.subscriptions.list({
       customer: customerId,
-      limit: 1,
+      limit: 5, // Get more subscriptions in case there are multiple
       status: 'all',
       expand: ['data.default_payment_method'],
     });
 
-    // TODO verify if needed
     if (subscriptions.data.length === 0) {
       console.info(`No active subscriptions found for customer: ${customerId}`);
       const { error: noSubError } = await supabase.from('stripe_subscriptions').upsert(
@@ -152,10 +151,22 @@ async function syncCustomerFromStripe(customerId: string) {
         console.error('Error updating subscription status:', noSubError);
         throw new Error('Failed to update subscription status in database');
       }
+      return;
     }
 
-    // assumes that a customer can only have a single subscription
-    const subscription = subscriptions.data[0];
+    // Find the most relevant subscription (prioritize active, then trialing, then others)
+    const priorityOrder = ['active', 'trialing', 'past_due', 'incomplete', 'canceled', 'unpaid'];
+    let subscription = subscriptions.data[0];
+    
+    for (const status of priorityOrder) {
+      const foundSub = subscriptions.data.find(sub => sub.status === status);
+      if (foundSub) {
+        subscription = foundSub;
+        break;
+      }
+    }
+
+    console.info(`Selected subscription ${subscription.id} with status ${subscription.status} from ${subscriptions.data.length} total subscriptions`);
 
     // store subscription state
     const { error: subError } = await supabase.from('stripe_subscriptions').upsert(

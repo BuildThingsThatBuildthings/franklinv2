@@ -75,7 +75,7 @@ Deno.serve(async (req) => {
     // Fetch the latest subscription data from Stripe
     const subscriptions = await stripe.subscriptions.list({
       customer: customer_id,
-      limit: 1,
+      limit: 5, // Get more subscriptions to find the best one
       status: 'all',
       expand: ['data.default_payment_method'],
     });
@@ -114,10 +114,19 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Get the most recent subscription
-    const subscription = subscriptions.data[0];
+    // Find the most relevant subscription (prioritize active, then trialing, then others)
+    const priorityOrder = ['active', 'trialing', 'past_due', 'incomplete', 'canceled', 'unpaid'];
+    let subscription = subscriptions.data[0];
+    
+    for (const status of priorityOrder) {
+      const foundSub = subscriptions.data.find(sub => sub.status === status);
+      if (foundSub) {
+        subscription = foundSub;
+        break;
+      }
+    }
 
-    console.log(`Syncing subscription ${subscription.id} with status ${subscription.status}`);
+    console.log(`Syncing subscription ${subscription.id} with status ${subscription.status} (selected from ${subscriptions.data.length} total subscriptions)`);
 
     // Update the local database with the latest subscription data
     const updateData: any = {

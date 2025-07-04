@@ -94,7 +94,9 @@ export function useSubscription() {
 
   const hasActiveSubscription = () => {
     console.log('Checking subscription status:', subscription?.subscription_status);
-    return subscription?.subscription_status === 'active' || subscription?.subscription_status === 'trialing';
+    // Support all subscription statuses that should have access to features
+    const validStatuses = ['active', 'trialing', 'past_due', 'incomplete'];
+    return subscription?.subscription_status && validStatuses.includes(subscription.subscription_status);
   };
 
   const isSubscriptionCanceled = () => {

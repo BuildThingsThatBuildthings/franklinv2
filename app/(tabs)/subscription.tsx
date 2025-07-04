@@ -55,6 +55,50 @@ export default function SubscriptionScreen() {
     return new Date(timestamp * 1000).toLocaleDateString();
   };
 
+  const getStatusDisplayText = (status: string | undefined) => {
+    switch (status) {
+      case 'active': return 'Active';
+      case 'trialing': return 'Trial';
+      case 'past_due': return 'Past Due';
+      case 'incomplete': return 'Incomplete';
+      case 'canceled': return 'Canceled';
+      case 'unpaid': return 'Unpaid';
+      default: return status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Unknown';
+    }
+  };
+
+  const getStatusBadgeStyle = (status: string | undefined) => {
+    switch (status) {
+      case 'active':
+      case 'trialing':
+        return { backgroundColor: '#D1FAE5' };
+      case 'past_due':
+      case 'incomplete':
+        return { backgroundColor: '#FEF3C7' };
+      case 'canceled':
+      case 'unpaid':
+        return { backgroundColor: '#FEE2E2' };
+      default:
+        return { backgroundColor: '#F3F4F6' };
+    }
+  };
+
+  const getStatusTextStyle = (status: string | undefined) => {
+    switch (status) {
+      case 'active':
+      case 'trialing':
+        return { color: '#059669' };
+      case 'past_due':
+      case 'incomplete':
+        return { color: '#D97706' };
+      case 'canceled':
+      case 'unpaid':
+        return { color: '#DC2626' };
+      default:
+        return { color: '#6B7280' };
+    }
+  };
+
   const handleSyncSubscription = async () => {
     if (!isConfigured || !user) return;
 
@@ -174,9 +218,11 @@ export default function SubscriptionScreen() {
               
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Status:</Text>
-                <View style={styles.statusBadge}>
+                <View style={[styles.statusBadge, getStatusBadgeStyle(subscription?.subscription_status)]}>
                   <Check size={16} color="#059669" />
-                  <Text style={styles.statusText}>Active</Text>
+                  <Text style={[styles.statusText, getStatusTextStyle(subscription?.subscription_status)]}>
+                    {getStatusDisplayText(subscription?.subscription_status)}
+                  </Text>
                 </View>
               </View>
               
