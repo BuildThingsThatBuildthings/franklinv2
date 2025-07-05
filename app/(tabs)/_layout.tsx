@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Chrome as Home, Target, Calendar, Settings, CreditCard } from 'lucide-react-native';
+import { Chrome as Home, Target, Calendar, Settings, CreditCard, Mountain } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
@@ -22,6 +22,15 @@ export default function TabLayout() {
         },
       }}
     >
+      <Tabs.Screen
+        name="purpose"
+        options={{
+          title: 'Purpose',
+          tabBarIcon: ({ size, color }) => (
+            <Mountain size={size} color={color} />
+          ),
+        }}
+      />
       <Tabs.Screen
         name="index"
         options={{

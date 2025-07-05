@@ -1,13 +1,15 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { DailyStats } from '@/src/types/core';
-import { CircleCheck as CheckCircle, Clock, Target, TrendingUp } from 'lucide-react-native';
+import { CircleCheck as CheckCircle, Clock, Target, TrendingUp, Star, Zap } from 'lucide-react-native';
 
 interface DailyStatsCardProps {
   stats: DailyStats;
+  totalXpToday?: number;
+  identityAreas?: any[];
 }
 
-export function DailyStatsCard({ stats }: DailyStatsCardProps) {
+export function DailyStatsCard({ stats, totalXpToday = 0, identityAreas = [] }: DailyStatsCardProps) {
   const getMotivationalMessage = () => {
     if (stats.completion_rate === 100) {
       return "Perfect day! You're building amazing momentum! 🎉";
@@ -81,6 +83,15 @@ export function DailyStatsCard({ stats }: DailyStatsCardProps) {
           <Text style={styles.statLabel}>Streaks</Text>
         </View>
       </View>
+        <View style={styles.statItem}>
+          <View style={[styles.statIcon, { backgroundColor: '#F59E0B20' }]}>
+            <Star size={20} color="#F59E0B" />
+          </View>
+          <Text style={styles.statValue}>
+            {totalXpToday}
+          </Text>
+          <Text style={styles.statLabel}>XP Today</Text>
+        </View>
 
       {/* Progress Bar */}
       <View style={styles.progressContainer}>
@@ -99,6 +110,36 @@ export function DailyStatsCard({ stats }: DailyStatsCardProps) {
           {stats.completion_rate}% of daily actions completed
         </Text>
       </View>
+
+      {/* Identity Areas Level Progress */}
+      {identityAreas.length > 0 && (
+        <View style={styles.identityProgress}>
+          <Text style={styles.identityProgressTitle}>Identity Progress</Text>
+          {identityAreas.slice(0, 3).map((area) => (
+            <View key={area.id} style={styles.identityAreaRow}>
+              <View style={styles.identityAreaInfo}>
+                <Text style={[styles.identityAreaName, { color: area.color }]}>
+                  {area.name}
+                </Text>
+                <Text style={styles.identityAreaLevel}>
+                  Level {area.level || 0} • {area.current_xp || 0} XP
+                </Text>
+              </View>
+              <View style={styles.identityAreaLevelBar}>
+                <View 
+                  style={[
+                    styles.identityAreaLevelFill, 
+                    { 
+                      width: `${((area.current_xp || 0) % 100)}%`,
+                      backgroundColor: area.color
+                    }
+                  ]} 
+                />
+              </View>
+            </View>
+          ))}
+        </View>
+      )}
     </View>
   );
 }
@@ -178,5 +219,45 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     color: '#6B7280',
     textAlign: 'center',
+  },
+  identityProgress: {
+    marginTop: 16,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#F3F4F6',
+  },
+  identityProgressTitle: {
+    fontSize: 14,
+    fontFamily: 'Inter-SemiBold',
+    color: '#374151',
+    marginBottom: 12,
+  },
+  identityAreaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  identityAreaInfo: {
+    flex: 1,
+    marginRight: 12,
+  },
+  identityAreaName: {
+    fontSize: 12,
+    fontFamily: 'Inter-SemiBold',
+  },
+  identityAreaLevel: {
+    fontSize: 10,
+    fontFamily: 'Inter-Regular',
+    color: '#6B7280',
+  },
+  identityAreaLevelBar: {
+    width: 60,
+    height: 4,
+    backgroundColor: '#F3F4F6',
+    borderRadius: 2,
+  },
+  identityAreaLevelFill: {
+    height: '100%',
+    borderRadius: 2,
   },
 });

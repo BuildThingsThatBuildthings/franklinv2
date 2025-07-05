@@ -163,6 +163,13 @@ export function OutcomeCard({ outcome, onPress, onUpdateProgress }: OutcomeCardP
             Created {formatDate(outcome.created_at)}
           </Text>
         </View>
+
+        <View style={styles.metadataItem}>
+          <Star size={16} color="#F59E0B" />
+          <Text style={styles.xpText}>
+            +{outcome.xp_awarded || 100} XP on completion
+          </Text>
+        </View>
       </View>
 
       {outcome.identity_area && (
@@ -289,6 +296,11 @@ const styles = StyleSheet.create({
   categoryText: {
     fontSize: 12,
     fontFamily: 'Inter-SemiBold',
+  },
+  xpText: {
+    fontSize: 12,
+    fontFamily: 'Inter-SemiBold',
+    color: '#F59E0B',
   },
   daysRemaining: {
     fontSize: 11,

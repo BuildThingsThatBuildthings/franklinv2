@@ -82,6 +82,13 @@ export function ActionCard({ action, onComplete, onUncomplete, onPress }: Action
             </Text>
           </View>
 
+          <View style={styles.metadataItem}>
+            <Flame size={16} color="#F97316" />
+            <Text style={styles.xpText}>
+              +{action.xp_awarded || 10} XP
+            </Text>
+          </View>
+
           {action.current_streak && action.current_streak > 0 && (
             <View style={styles.metadataItem}>
               <Flame size={16} color="#F97316" />
@@ -194,6 +201,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     color: '#8B5CF6',
     maxWidth: 100,
+  },
+  xpText: {
+    fontSize: 12,
+    fontFamily: 'Inter-SemiBold',
+    color: '#F97316',
   },
   categoryBadge: {
     alignSelf: 'flex-start',

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Ref
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/src/hooks/useSubscription';
 import { useMicroActions } from '@/src/hooks/useMicroActions';
+import { useIdentityAreas } from '@/src/hooks/useIdentityAreas';
 import { ActionCard } from '@/components/ActionCard';
 import { DailyStatsCard } from '@/components/DailyStatsCard';
 import { CreateActionModal } from '@/components/CreateActionModal';
@@ -22,6 +23,7 @@ export default function TodayScreen() {
     uncompleteAction,
     refetch: refetchActions 
   } = useMicroActions();
+  const { identityAreas } = useIdentityAreas();
   
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -63,6 +65,11 @@ export default function TodayScreen() {
     return <Moon size={20} color="#6366F1" />;
   };
 
+  const calculateTodayXP = () => {
+    return actions
+      .filter(action => action.completed_today)
+      .reduce((total, action) => total + (action.xp_awarded || 10), 0);
+  };
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView 
@@ -114,7 +121,11 @@ export default function TodayScreen() {
 
         {/* Daily Stats */}
         {dailyStats && (
-          <DailyStatsCard stats={dailyStats} />
+          <DailyStatsCard 
+            stats={dailyStats} 
+            totalXpToday={calculateTodayXP()}
+            identityAreas={identityAreas}
+          />
         )}
 
         {/* Actions Section */}

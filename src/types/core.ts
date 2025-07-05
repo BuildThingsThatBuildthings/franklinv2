@@ -5,12 +5,15 @@ export interface IdentityArea {
   icon?: string;
   color: string;
   sort_order: number;
+  current_xp?: number;
+  level?: number;
   created_at: string;
 }
 
 export interface Outcome {
   id: string;
   user_id: string;
+  purpose_id?: string;
   identity_area_id?: string;
   title: string;
   description?: string;
@@ -18,6 +21,7 @@ export interface Outcome {
   target_date?: string;
   status: 'active' | 'completed' | 'paused' | 'archived';
   progress_percentage: number;
+  xp_awarded?: number;
   created_at: string;
   updated_at: string;
   identity_area?: IdentityArea;
@@ -33,6 +37,7 @@ export interface MicroAction {
   identity_tag?: string;
   difficulty_level: number;
   estimated_minutes: number;
+  xp_awarded?: number;
   is_template: boolean;
   status: 'active' | 'paused' | 'archived';
   created_at: string;
@@ -85,4 +90,13 @@ export interface DailyStats {
   longest_streak: number;
   total_minutes_estimated: number;
   total_minutes_completed: number;
+}
+
+export interface Purpose {
+  id: string;
+  user_id: string;
+  title: string;
+  description?: string;
+  created_at: string;
+  updated_at: string;
 }
