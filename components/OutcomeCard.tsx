@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Outcome } from '@/src/types/core';
-import { Target, Calendar, TrendingUp, CircleCheck as CheckCircle, Clock, Pause, Archive } from 'lucide-react-native';
+import { Target, Calendar, TrendingUp, CircleCheck as CheckCircle, Clock, Pause, Archive, Star } from 'lucide-react-native';
 
 interface OutcomeCardProps {
   outcome: Outcome;

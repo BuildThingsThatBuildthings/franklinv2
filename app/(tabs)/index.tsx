@@ -128,6 +128,38 @@ export default function TodayScreen() {
           />
         )}
 
+        {/* OODA Loop Status */}
+        {actions.length > 0 && (
+          <View style={styles.ooodaStatus}>
+            <Text style={styles.ooodaStatusTitle}>Today's OODA Micro-Loop</Text>
+            <View style={styles.ooodaPhases}>
+              <View style={styles.ooodaPhase}>
+                <View style={[styles.ooodaPhaseIcon, { backgroundColor: '#3B82F620' }]}>
+                  <Target size={16} color="#3B82F6" />
+                </View>
+                <Text style={styles.ooodaPhaseText}>Plan</Text>
+                <Text style={styles.ooodaPhaseStatus}>✓</Text>
+              </View>
+              <View style={styles.ooodaPhase}>
+                <View style={[styles.ooodaPhaseIcon, { backgroundColor: '#10B98120' }]}>
+                  <Zap size={16} color="#10B981" />
+                </View>
+                <Text style={styles.ooodaPhaseText}>Act</Text>
+                <Text style={styles.ooodaPhaseStatus}>
+                  {dailyStats?.completion_rate || 0}%
+                </Text>
+              </View>
+              <View style={styles.ooodaPhase}>
+                <View style={[styles.ooodaPhaseIcon, { backgroundColor: '#6366F120' }]}>
+                  <Calendar size={16} color="#6366F1" />
+                </View>
+                <Text style={styles.ooodaPhaseText}>Reflect</Text>
+                <Text style={styles.ooodaPhaseStatus}>-</Text>
+              </View>
+            </View>
+          </View>
+        )}
+
         {/* Actions Section */}
         <View style={styles.actionsSection}>
           <View style={styles.sectionHeader}>
@@ -399,5 +431,51 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     color: '#6B7280',
     lineHeight: 20,
+  },
+  ooodaStatus: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    marginVertical: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  ooodaStatusTitle: {
+    fontSize: 16,
+    fontFamily: 'Inter-Bold',
+    color: '#1F2937',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  ooodaPhases: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  ooodaPhase: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  ooodaPhaseIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  ooodaPhaseText: {
+    fontSize: 12,
+    fontFamily: 'Inter-SemiBold',
+    color: '#374151',
+    marginBottom: 2,
+  },
+  ooodaPhaseStatus: {
+    fontSize: 10,
+    fontFamily: 'Inter-Regular',
+    color: '#6B7280',
   },
 });

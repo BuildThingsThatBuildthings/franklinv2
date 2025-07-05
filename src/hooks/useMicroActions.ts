@@ -57,17 +57,23 @@ export function useMicroActions() {
             .select('*', { count: 'exact', head: true })
             .eq('micro_action_id', action.id);
 
-          // Get current streak (we'll call the database function)
-          const { data: streakData } = await supabase.rpc('get_user_streak', {
-            user_action_id: action.id,
-            user_id_param: user?.id
-          });
+          // Get current streak (call the database function safely)
+          let streakData = 0;
+          try {
+            const { data: streak } = await supabase.rpc('get_user_streak', {
+              user_action_id: action.id,
+              user_id_param: user?.id
+            });
+            streakData = streak || 0;
+          } catch (error) {
+            console.warn('Streak calculation failed:', error);
+          }
 
           return {
             ...action,
             completed_today: !!todayCompletion,
             total_completions: totalCompletions || 0,
-            current_streak: streakData || 0,
+            current_streak: streakData,
           };
         })
       );
