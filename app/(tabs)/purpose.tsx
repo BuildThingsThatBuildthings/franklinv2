@@ -328,7 +328,7 @@ export default function PurposeScreen() {
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Users size={18} color="#8B5CF6" />
-          <Text style={styles.sectionTitle}>Identity Metrics</Text>
+          <Text style={styles.sectionTitle}>Virtue Metrics</Text>
         </View>
         <View style={styles.identityMetrics}>
           {identityAreas.map((area) => (
@@ -543,10 +543,10 @@ export default function PurposeScreen() {
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Flame size={18} color="#10B981" />
-          <Text style={styles.sectionTitle}>Daily Priority Board</Text>
+          <Text style={styles.sectionTitle}>Daily Virtue Board</Text>
         </View>
         <Text style={styles.sectionSubtitle}>
-          Today's top micro-steps tagged by identity metric
+          Today's top micro-steps tagged by virtue metric
         </Text>
 
         <View style={styles.priorityBoard}>

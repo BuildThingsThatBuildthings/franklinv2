@@ -114,7 +114,7 @@ export function DailyStatsCard({ stats, totalXpToday = 0, identityAreas = [] }: 
       {/* Identity Areas Level Progress */}
       {identityAreas.length > 0 && (
         <View style={styles.identityProgress}>
-          <Text style={styles.identityProgressTitle}>Identity Progress</Text>
+          <Text style={styles.identityProgressTitle}>Virtue Progress</Text>
           {identityAreas.slice(0, 3).map((area) => (
             <View key={area.id} style={styles.identityAreaRow}>
               <View style={styles.identityAreaInfo}>
