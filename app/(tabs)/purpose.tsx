@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { usePurpose } from '@/src/hooks/usePurpose';
 import { useAuth } from '@/contexts/AuthContext';
-import { Mountain, Target, TrendingUp, Star, Plus, Edit3, Save, X, Compass, Flame } from 'lucide-react-native';
+import { Mountain, Target, TrendingUp, Star, Plus, CreditCard as Edit3, Save, X, Compass, Flame } from 'lucide-react-native';
 
 export default function PurposeScreen() {
   const { user, isConfigured } = useAuth();
