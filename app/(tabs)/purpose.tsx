@@ -15,7 +15,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useIdentityAreas } from '@/src/hooks/useIdentityAreas';
 import { useOutcomes } from '@/src/hooks/useOutcomes';
 import { useMicroActions } from '@/src/hooks/useMicroActions';
-import { Mountain, Target, TrendingUp, Star, Plus, Edit3, Save, X, Compass, Flame, Eye, Brain, Zap, Calendar, BarChart3, Users, Lightbulb, AlertTriangle } from 'lucide-react-native';
+import { Mountain, Target, TrendingUp, Star, Plus, CreditCard as Edit3, Save, X, Compass, Flame, Eye, Brain, Zap, Calendar, ChartBar as BarChart3, Users, Lightbulb, TriangleAlert as AlertTriangle } from 'lucide-react-native';
 
 type OODAPhase = 'orient' | 'observe' | 'decide' | 'act';
 
