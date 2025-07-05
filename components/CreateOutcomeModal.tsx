@@ -166,7 +166,7 @@ export function CreateOutcomeModal({ visible, onClose, onCreate }: CreateOutcome
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.label}>Life Area</Text>
+            <Text style={styles.label}>Virtue Area</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.areasScroll}>
               <TouchableOpacity
                 style={[styles.areaChip, !selectedAreaId && styles.areaChipSelected]}
@@ -382,3 +382,5 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-SemiBold',
   },
 });
+
+export { CreateOutcomeModal }
